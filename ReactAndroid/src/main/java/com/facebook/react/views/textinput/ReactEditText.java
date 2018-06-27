@@ -80,6 +80,7 @@ public class ReactEditText extends EditText {
   private @Nullable ScrollWatcher mScrollWatcher;
   private final InternalKeyListener mKeyListener;
   private boolean mDetectScrollMovement = false;
+  private boolean mOnKeyPress = false;
 
   private ReactViewBackgroundManager mReactBackgroundManager;
 
@@ -173,7 +174,7 @@ public class ReactEditText extends EditText {
   public InputConnection onCreateInputConnection(EditorInfo outAttrs) {
     ReactContext reactContext = (ReactContext) getContext();
     InputConnection inputConnection = super.onCreateInputConnection(outAttrs);
-    if (inputConnection != null) {
+    if (inputConnection != null && mOnKeyPress) {
       inputConnection = new ReactEditTextInputConnectionWrapper(inputConnection, reactContext, this);
     }
 
@@ -270,6 +271,10 @@ public class ReactEditText extends EditText {
 
   public void setBlurOnSubmit(@Nullable Boolean blurOnSubmit) {
     mBlurOnSubmit = blurOnSubmit;
+  }
+
+  public void setOnKeyPress(boolean onKeyPress) {
+    mOnKeyPress = onKeyPress;
   }
 
   public boolean getBlurOnSubmit() {
