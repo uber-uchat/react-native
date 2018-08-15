@@ -263,6 +263,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   @Override
   public void fling(int velocityY) {
     if (mScroller != null) {
+      // Fix android p scrolling issue
+      if (Build.VERSION.SDK_INT == 28) {
+        velocityY = velocityY * -1;
+      }
       // FB SCROLLVIEW CHANGE
 
       // We provide our own version of fling that uses a different call to the standard OverScroller
