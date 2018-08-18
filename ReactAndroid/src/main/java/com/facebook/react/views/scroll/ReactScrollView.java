@@ -14,6 +14,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.view.ViewCompat;
+import android.os.Build;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -263,11 +264,6 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
   @Override
   public void fling(int velocityY) {
     if (mScroller != null) {
-      // Fix android p scrolling issue
-      if (Build.VERSION.SDK_INT == 28) {
-        velocityY = velocityY * -1;
-      }
-      
       // FB SCROLLVIEW CHANGE
 
       // We provide our own version of fling that uses a different call to the standard OverScroller
@@ -277,6 +273,10 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       // aborts the scroller animation when we get to the bottom of the ScrollView content.
 
       int scrollWindowHeight = getHeight() - getPaddingBottom() - getPaddingTop();
+
+      if (this.getScaleY() < 0 && Build.VERSION.SDK_INT > 27) {
+        velocityY *= -1;
+      }
 
       mScroller.fling(
         getScrollX(),
@@ -290,7 +290,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
         0,
         scrollWindowHeight / 2);
 
-      ViewCompat.postInvalidateOnAnimation(this);
+      postInvalidateOnAnimation();
 
       // END FB SCROLLVIEW CHANGE
     } else {
@@ -320,7 +320,7 @@ public class ReactScrollView extends ScrollView implements ReactClippingViewGrou
       ViewCompat.postOnAnimationDelayed(this, r, ReactScrollViewHelper.MOMENTUM_DELAY);
     }
   }
-
+  
   private void enableFpsListener() {
     if (isScrollPerfLoggingEnabled()) {
       Assertions.assertNotNull(mFpsListener);
